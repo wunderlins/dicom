@@ -1,6 +1,8 @@
 #!/usr/bin/env python
-import sys, os
+import sys
+import os
 import atexit
+import socket
 
 config = {
 	"host":  "127.0.0.1",
@@ -86,21 +88,34 @@ if __name__ == "__main__":
 		
 		# deal with other errors
 		except:
-			sys.stderr.write("Unknwon error while reading file {0}: {1}\n".format(filename, err))
+			sys.stderr.write("Unknwon error while reading file {0}: {1}\n".format(filename, 
+				sys.exc_info()[0]))
 			sys.exit(2)
 		
-		# check if process is running
-		# is running 
+		# abort sratrtup because pocess is already running
 		if pidfile_content and check_pid(int(pidfile_content)) == True:
 			# exit
 			sys.stderr.write("Program already running, pid: %s. Aborting!" % pidfile_content)
 			sys.exit(3)
+	
+	# if we got this far:
+	# - we have no pid file
+	# - pid file content does not contain a pid of a running process
+	
+	# try to launch http deamon
+	try:
+		startup()
+	
+	except SystemExit:
+		pass
 		
-	# pid file does not exist, try to launch http deamon
-	startup()
-	
-	
-	
-
-
+	except socket.error:
+		sys.stderr.write("Unable to bind socket: {0}\n".format(sys.exc_info()[0]))
+		sys.exit(10)
+		
+		
+	# deal with startup errors
+	except:
+		sys.stderr.write("Unknwon error while running httpd: {0}\n".format(sys.exc_info()[0]))
+		sys.exit(20)
 
