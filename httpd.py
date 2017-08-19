@@ -23,8 +23,8 @@ def check_pid(pid):
 		return False
 	except:
 		return False
-	else:
-		return True
+	
+	return True
 
 from flask import Flask
 app = Flask(__name__)
@@ -68,13 +68,13 @@ if __name__ == "__main__":
 	#print pidfile
 	#print os.path.isfile(pidfile)
 	
-	# check if pid file exists
-	# if exists
 	pidfile_content = None
 	pidfp = None
 	
+	# check if pid file exists
+	# if exists
 	if os.path.isfile(pidfile):
-		# open
+		# open and get contents
 		try:
 			pidfp = open(pidfile, "wb+")
 			# read value
@@ -116,6 +116,6 @@ if __name__ == "__main__":
 		
 	# deal with startup errors
 	except:
-		sys.stderr.write("Unknwon error while running httpd: {0}\n".format(sys.exc_info()[0]))
+		sys.stderr.write("Error while starting httpd: {0}\n".format(sys.exc_info()[0]))
 		sys.exit(20)
 
